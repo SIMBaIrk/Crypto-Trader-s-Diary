@@ -44,11 +44,20 @@ class NavBarBrand extends React.Component {
 
       this.state = {isLogin: true, username: "", password: "", secondPassword: "", email: ""};
       this.toggleRegister = this.toggleRegister.bind(this);
+      this.onSubmitLogin = this.onSubmitLogin.bind(this);
     }
 
     toggleRegister(){
       this.setState(state => ({isLogin: !state.isLogin}));
     }
+
+    setEmail(){
+      this.setState(state => ({email: state}))
+    }
+
+    onSubmitLogin(e) {
+      Meteor.loginWithPassword(this.state.email, this.state.password);
+    };
 
     render(){
       let loginButton;
@@ -56,7 +65,7 @@ class NavBarBrand extends React.Component {
       let userName;
       let secondPassword;
       if (this.state.isLogin){
-        loginButton = <button type="submit" className="btn btn-primary">Log in</button>;
+        loginButton = <button type="submit" className="btn btn-primary" onClick={()=>this.onSubmitLogin()}>Log in</button>;
 
         checkBoxRemember = <div className="form-check">
         <input type="checkbox" className="form-check-input" id="dropdownCheck2" />
@@ -71,13 +80,13 @@ class NavBarBrand extends React.Component {
         checkBoxRemember = "";
 
         userName = <div className="form-group">
-          <label htmlFor="FormLogin">Login</label>
-          <input type="login" className="form-control" id="FormLogin" placeholder="username" />
+          <label htmlFor="FormUserName">Name</label>
+          <input type="text" className="form-control" id="FormUserName" placeholder="Name" onChange={()=>this.setState({username: this.value})}/>
         </div>;
 
         secondPassword = <div className="form-group">
             <label htmlFor="FormConfirmPassword">Confirm-password</label>
-            <input type="password" className="form-control" id="FormConfirmPassword" placeholder="confirm password" />
+            <input type="password" className="form-control" id="FormConfirmPassword" placeholder="confirm password" onChange={()=>this.setState({secondPassword: this.value})}/>
           </div>;
       }
 
@@ -92,11 +101,11 @@ class NavBarBrand extends React.Component {
           {userName}
           <div className="form-group">
             <label htmlFor="FormEmail">Email address</label>
-            <input type="email" className="form-control" id="FormEmail" placeholder="email@example.com" />
+            <input type="email" className="form-control" id="FormEmail" placeholder="email@example.com" required onChange={()=>this.setState({email: this.value})} />
           </div>
           <div className="form-group">
             <label htmlFor="FormPassword">Password</label>
-            <input type="password" className="form-control" id="FormPassword" placeholder="Password" />
+            <input type="password" className="form-control" id="FormPassword" placeholder="Password" required onChange={()=>this.setState({password: this.value})} />
           </div>
           {secondPassword}
           {checkBoxRemember}
@@ -109,38 +118,45 @@ class NavBarBrand extends React.Component {
   class LoginButton extends React.Component{
     render(){
       return <li className="dropdown">
-          <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Login <span className="caret"></span></a>
+          <a className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Войти <span className="caret"></span></a>
           <LoginForm />
         </li>
     }
   }
-  
-  class NavBarNavRight extends React.Component{
-    render(){
-      return <ul className="nav navbar-nav navbar-right">
-        <li><p class="navbar-text">Already have an account?</p></li>
-        <LoginButton />
-      </ul>
+
+  class UserButton extends React.Component{
+    constructor(props){
+      super(props);
     }
-  }
-  
-  class NavBarMenu extends React.Component {
+
     render(){
+      return <li className="dropdown">
+        <a className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{this.props.user.username} <span className="caret"></span></a>
+      </li>
+    }
+  };
+  
+  function NavBarNavRight() {
+    const user = useTracker(() => Meteor.user());
+
+    return <ul className="nav navbar-nav navbar-right">
+        <li><p className="navbar-text">Уже есть аккаунт?</p></li>
+        {this.user ? <UserButton user={this.user} /> : <LoginButton />}
+      </ul>
+  };
+  
+  function NavBarMenu(){
         return <div id="navbar" className="navbar-collapse collapse">
             <NavBarNavLeft />
             <NavBarNavRight />
           </div>;
-    }
-  }
+  };
 
-export class NavBar extends React.Component {
-    render() {
+export function NavBar(){
       return <nav className="navbar navbar-default navbar-fixed-top">
         <div className="container">
           <NavBarBrand brand="Дневник Трейдера" />
           <NavBarMenu />
         </div>
       </nav>;
-    }
-    
-  };
+    };
