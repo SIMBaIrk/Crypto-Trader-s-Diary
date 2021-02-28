@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import { useTracker } from "meteor/react-meteor-data";
 
 // Заголовок меню
@@ -37,88 +37,65 @@ const NavBarNavLeft = () => {
 }
 
 // выпадающее меню авторизации
-class LoginForm extends React.Component{
-  constructor(props){
-    super(props)
+const LoginFormFunc = () => {
+  const [isLoginForm, toggleRegister] = useState(true);
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [secondPassword, setSPassw] = useState("");
 
-    this.state = {isLogin: true, username: "", password: "", secondPassword: "", email: ""};
-    this.toggleRegister = this.toggleRegister.bind(this);
-    this.onSubmitLogin = this.onSubmitLogin.bind(this);
+  function onSubmitLogin(e){
+    e.preventDefault();
+    Meteor.loginWithPassword(email, password);
   }
 
-  toggleRegister(){
-    this.setState(state => ({isLogin: !state.isLogin}));
+  function registerNewUser(e){
+    console.log(e);
   }
 
-  setEmail(){
-    this.setState(state => ({email: state}))
+  let userName = "";
+  let loginButton = <button type="submit" className="btn btn-primary" onClick={onSubmitLogin}>Войти</button>;
+  let formSecondPassword = "";
+  if (!isLoginForm){
+    userName = <div className="form-group">
+      <label htmlFor="FormUserName">Name</label>
+      <input type="text" className="form-control" id="FormUserName" placeholder="Name" onChange={(e)=>setUsername(e.target.value)}/>
+    </div>;
+
+    formSecondPassword = <div className="form-group">
+      <label htmlFor="FormConfirmPassword">Confirm-password</label>
+      <input type="password" className="form-control" id="FormConfirmPassword" placeholder="confirm password" onChange={(e)=> setSPassw(e.target.value)}/>
+    </div>;
+
+    loginButton = <button type="submit" className="btn btn-primary" onClick={registerNewUser}>Регистрация</button>;
   }
 
-  onSubmitLogin(e) {
-    Meteor.loginWithPassword(this.state.email, this.state.password);
-  };
-
-  render(){
-    let loginButton;
-    let checkBoxRemember;
-    let userName;
-    let secondPassword;
-    if (this.state.isLogin){
-      loginButton = <button type="submit" className="btn btn-primary" onClick={()=>this.onSubmitLogin()}>Log in</button>;
-
-      checkBoxRemember = <div className="form-check">
-      <input type="checkbox" className="form-check-input" id="dropdownCheck2" />
-      <label className="form-check-label" htmlFor="dropdownCheck2">
-        Remember me
-      </label>
-      </div>;
-      userName = "";
-      secondPassword = "";
-    }else {
-      loginButton = <button type="submit" className="btn btn-primary">Sign in</button>;
-      checkBoxRemember = "";
-
-      userName = <div className="form-group">
-        <label htmlFor="FormUserName">Name</label>
-        <input type="text" className="form-control" id="FormUserName" placeholder="Name" onChange={()=>this.setState({username: this.value})}/>
-      </div>;
-
-      secondPassword = <div className="form-group">
-          <label htmlFor="FormConfirmPassword">Confirm-password</label>
-          <input type="password" className="form-control" id="FormConfirmPassword" placeholder="confirm password" onChange={()=>this.setState({secondPassword: this.value})}/>
-        </div>;
-    }
-
-    return <Fragment> 
-      <form className="dropdown-menu" style={{padding: "15px", paddingBottom: "10px", minWidth: "240px"}}>
-      <ul className="nav nav-pills">
-        <li role="presentation" className={this.state.isLogin?("active"):("")}><a onClick={this.toggleRegister}>Login</a>
-        </li>
-        <li role="presentation" className={this.state.isLogin?(""):("active")}><a onClick={this.toggleRegister}>Register</a>
-        </li>
-      </ul>
-        {userName}
-        <div className="form-group">
-          <label htmlFor="FormEmail">Email address</label>
-          <input type="email" className="form-control" id="FormEmail" placeholder="email@example.com" required onChange={()=>this.setState({email: this.value})} />
-        </div>
-        <div className="form-group">
-          <label htmlFor="FormPassword">Password</label>
-          <input type="password" className="form-control" id="FormPassword" placeholder="Password" required onChange={()=>this.setState({password: this.value})} />
-        </div>
-        {secondPassword}
-        {checkBoxRemember}
-        {loginButton}
-      </form>
-      </Fragment>
-  }
+  return <form className="dropdown-menu" style={{padding: "15px", paddingBottom: "10px", minWidth: "240px"}}>
+    <ul className="nav nav-pills">
+      <li role="presentation" className={isLoginForm?("active"):("")}><a onClick={() => toggleRegister(!isLoginForm)}>Войти</a>
+      </li>
+      <li role="presentation" className={isLoginForm?(""):("active")}><a onClick={() => toggleRegister(!isLoginForm)}>Регитсрация</a>
+      </li>
+    </ul>
+    {userName}
+    <div className="form-group">
+      <label htmlFor="FormEmail">Email address</label>
+      <input type="email" className="form-control" id="FormEmail" placeholder="email@example.com" required onChange={(e) => setEmail(e.target.value)} />
+    </div>
+    <div className="form-group">
+      <label htmlFor="FormPassword">Password</label>
+      <input type="password" className="form-control" id="FormPassword" placeholder="Password" required onChange={(e) => setPassword(e.target.value)} />
+    </div>
+    {formSecondPassword}
+    {loginButton}
+  </form>
 }
 
 // кнопка логин регистрация
 const LoginButton =()=>{
   return <li className="dropdown">
       <a className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Войти <span className="caret"></span></a>
-      <LoginForm />
+      <LoginFormFunc />
     </li>
 }
 
