@@ -127,31 +127,30 @@ const UserButton = (props) => {
 };
  
 // либо кнопка доступа к настройкам, либо логин регистрация
-const NavBarNavRight = () => {
-  const user = useTracker(() => Meteor.user());
+const NavBarNavRight = (props) => {
 
   return <ul className="nav navbar-nav navbar-right">
       <li><p className="navbar-text">Уже есть аккаунт?</p></li>
-      {user ? 
-      <UserButton user={user} /> : 
+      {props.user ? 
+      <UserButton user={props.user} /> : 
       <LoginButton />}
     </ul>
 };
 
 // меню из двух частей, та что к заголовку и справа
-const NavBarMenu = () => {
+const NavBarMenu = (props) => {
       return <div id="navbar" className="navbar-collapse collapse">
           <NavBarNavLeft />
-          <NavBarNavRight />
+          <NavBarNavRight user={props.user}/>
         </div>;
 };
 
 // сам NavBar, тут заголовок + меню
-export const NavBar = () => {
+export const NavBar = (props) => {
   return <nav className="navbar navbar-default navbar-fixed-top">
     <div className="container">
       <NavBarBrand brand="Дневник Трейдера" />
-      <NavBarMenu />
+      <NavBarMenu user={props.user}/>
     </div>
   </nav>;
 };
