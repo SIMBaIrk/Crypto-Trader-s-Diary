@@ -8,6 +8,9 @@ import { Accounts } from 'meteor/accounts-base';
 
 // Заголовок меню
 const NavBarBrand =(props)=> {
+  function onClickHandle(){
+    props.setItemMenu(0);
+  }
   return <div className="navbar-header">
     <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
       <span className="sr-only">Toggle navigation</span>
@@ -15,13 +18,19 @@ const NavBarBrand =(props)=> {
       <span className="icon-bar"></span>
       <span className="icon-bar"></span>
     </button>
-    <a className="navbar-brand" href="#">{props.brand}</a>
+    <a className="navbar-brand" onClick={onClickHandle}>{props.brand}</a>
   </div>;
 };
 
 // кнопки слева
-const NavBarNavLeft = () => {
-    return <ul className="nav navbar-nav"></ul>
+const NavBarNavLeft = (props) => {
+  function onClickHandle(){
+    props.setItemMenu(0);
+  }
+
+  return <ul className="nav navbar-nav">
+    <li className={props.itemMenu == 0? "active":""}><a onClick={onClickHandle}>Дневник <span className="sr-only">(current)</span></a>
+    </li></ul>
 // <ul className="nav navbar-nav">
 //             <li className="active"><a href="#">Home</a></li>
 //             <li><a href="#about">About</a></li>
@@ -115,11 +124,20 @@ const ExitButton = (props) => {
   return <li><a onClick={onClickExit}>Выйти</a></li>
 }
 
+const SettingsButton = (props) => {
+  function handeSettings(e){
+    props.setItemMenu(1);
+  }
+
+  return <li><a onClick={handeSettings}>Настройки</a></li>
+}
+
 // кнопка пользователя
 const UserButton = (props) => {
   return <li className="dropdown">
     <a className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{props.user.profile.name} <span className="caret"></span></a>
       <ul className="dropdown-menu">
+        <SettingsButton setItemMenu={props.setItemMenu}/>
         <li role="separator" className="divider"></li>
         <ExitButton />
       </ul>
@@ -132,7 +150,7 @@ const NavBarNavRight = (props) => {
   return <ul className="nav navbar-nav navbar-right">
       <li><p className="navbar-text">Уже есть аккаунт?</p></li>
       {props.user ? 
-      <UserButton user={props.user} /> : 
+      <UserButton user={props.user} setItemMenu={props.setItemMenu}/> : 
       <LoginButton />}
     </ul>
 };
@@ -140,8 +158,8 @@ const NavBarNavRight = (props) => {
 // меню из двух частей, та что к заголовку и справа
 const NavBarMenu = (props) => {
       return <div id="navbar" className="navbar-collapse collapse">
-          <NavBarNavLeft />
-          <NavBarNavRight user={props.user}/>
+          <NavBarNavLeft setItemMenu={props.setItemMenu} itemMenu={props.itemMenu}/>
+          <NavBarNavRight user={props.user} setItemMenu={props.setItemMenu}/>
         </div>;
 };
 
@@ -149,8 +167,8 @@ const NavBarMenu = (props) => {
 export const NavBar = (props) => {
   return <nav className="navbar navbar-default navbar-fixed-top">
     <div className="container">
-      <NavBarBrand brand="Дневник Трейдера" />
-      <NavBarMenu user={props.user}/>
+      <NavBarBrand brand="Дневник Трейдера" setItemMenu={props.setItemMenu} itemMenu={props.itemMenu} />
+      <NavBarMenu user={props.user} setItemMenu={props.setItemMenu} itemMenu={props.itemMenu}/>
     </div>
   </nav>;
 };
