@@ -1,5 +1,6 @@
-import React, { Fragment, useState } from 'react';
+import React, { useState } from 'react';
 import { useTracker } from "meteor/react-meteor-data";
+import { Accounts } from 'meteor/accounts-base';
 
 // Заголовок меню
 const NavBarBrand =(props)=> {
@@ -50,7 +51,9 @@ const LoginFormFunc = () => {
   }
 
   function registerNewUser(e){
-    console.log(e);
+    Accounts.createUser({email: email, 
+      password: password,
+      profile:{name: username}});
   }
 
   let userName = "";
@@ -110,7 +113,7 @@ const ExitButton = (props) => {
 // кнопка пользователя
 const UserButton = (props) => {
   return <li className="dropdown">
-    <a className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{props.user.username} <span className="caret"></span></a>
+    <a className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{props.user.profile.name} <span className="caret"></span></a>
       <ul className="dropdown-menu">
         <li role="separator" className="divider"></li>
         <ExitButton />
