@@ -99,10 +99,22 @@ const LoginButton =()=>{
     </li>
 }
 
+const ExitButton = (props) => {
+  function onClickExit(){
+    Meteor.logout();
+  }
+
+  return <li><a onClick={onClickExit}>Выйти</a></li>
+}
+
 // кнопка пользователя
 const UserButton = (props) => {
   return <li className="dropdown">
     <a className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{props.user.username} <span className="caret"></span></a>
+      <ul className="dropdown-menu">
+        <li role="separator" className="divider"></li>
+        <ExitButton />
+      </ul>
   </li>
 };
  
@@ -112,7 +124,7 @@ const NavBarNavRight = () => {
 
   return <ul className="nav navbar-nav navbar-right">
       <li><p className="navbar-text">Уже есть аккаунт?</p></li>
-      {this.user ? 
+      {user ? 
       <UserButton user={user} /> : 
       <LoginButton />}
     </ul>
