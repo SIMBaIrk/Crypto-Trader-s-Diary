@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { useTracker } from "meteor/react-meteor-data";
 import { Accounts } from 'meteor/accounts-base';
 
+// TODO:
+// 1. обработка ошибок авторизации, и регистрации
+// 2. Добавить кнопки настройки пользователя
+
 // Заголовок меню
 const NavBarBrand =(props)=> {
   return <div className="navbar-header">
@@ -54,6 +58,7 @@ const LoginFormFunc = () => {
     Accounts.createUser({email: email, 
       password: password,
       profile:{name: username}});
+    e.preventDefault();
   }
 
   let userName = "";
