@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTracker } from "meteor/react-meteor-data";
-import { UserSettingsCollection } from '../api/userSettings';
+import { UserSettingsCollection } from '../db/userSettings';
 import { exchanges } from 'ccxt';
 
 const SelectTF = (props) => {

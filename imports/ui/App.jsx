@@ -3,7 +3,7 @@ import { useTracker } from "meteor/react-meteor-data";
 import { NavBar } from "./NavBar";
 import { TradeBody } from './Trades';
 import { Settings } from './Settings';
-import { UserSettingsCollection } from '../api/userSettings'
+import { UserSettingsCollection } from '../db/userSettings'
 
 export const App = () => {
     const user = useTracker(() => Meteor.user());
