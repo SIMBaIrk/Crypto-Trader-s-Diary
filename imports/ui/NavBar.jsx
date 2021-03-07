@@ -67,6 +67,8 @@ const LoginFormFunc = () => {
     Accounts.createUser({email: email, 
       password: password,
       profile:{name: username}});
+    
+    Meteor.call('settings.insert','1h'); // default tf
     e.preventDefault();
   }
 
