@@ -15,7 +15,7 @@ const ExchangeInfo = (props) => {
 const ListExchanges = (props) => {
 
     return <div className="panel panel-default">
-    <div className="panel-heading">Настройки подключений</div>
+    <div className="panel-heading">Подключения</div>
         <ul className="list-group">
             {props.exchanges.map((curExchange) => <ExchangeInfo exchange={curExchange} allExchanges={props.allExchanges}/>)}
             <ExchangeInfo exchange="NEW" allExchanges={props.allExchanges}/>
@@ -25,9 +25,17 @@ const ListExchanges = (props) => {
 
 const SelectTF = (props) => {
 
-    return <form><select className="form-control" onChange={props.onChange} value={props.selected}>
-        {props.allTF.map((timef) => <option key={timef.id} value={timef.id}>{timef.title}</option>)}
-    </select></form>
+    return <div className="panel panel-default">
+        <div className="panel-heading">Основные</div>
+            <form>
+                <div className="input-group">
+                    <span className="input-group-addon" id="basic-addon3">Основной ТФ для сделок</span>
+                        <select className="form-control" onChange={props.onChange} value={props.selected}>
+                        {props.allTF.map((timef) => <option key={timef.id} value={timef.id}>{timef.title}</option>)}
+                        </select>
+                </div>
+            </form>
+        </div>
 }
 
 function getSettings(user){
