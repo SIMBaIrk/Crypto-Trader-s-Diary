@@ -2,6 +2,26 @@ import React from 'react';
 import { useTracker } from "meteor/react-meteor-data";
 import { UserSettingsCollection } from '../db/userSettings';
 import { exchanges } from 'ccxt';
+import { UserExchangeSettingsCollection } from '../db/userExchangeSettings';
+
+const ExchangeInfo = (props) => {
+    function onClickChange(e){
+        console.log("push edit");
+    }
+
+    return <li className="list-group-item">{props.exchange} <a onClick={onClickChange}><span className="align-right glyphicon glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
+}
+
+const ListExchanges = (props) => {
+
+    return <div className="panel panel-default">
+    <div className="panel-heading">Настройки подключений</div>
+        <ul className="list-group">
+            {props.exchanges.map((curExchange) => <ExchangeInfo exchange={curExchange} allExchanges={props.allExchanges}/>)}
+            <ExchangeInfo exchange="NEW" allExchanges={props.allExchanges}/>
+        </ul>
+    </div>
+}
 
 const SelectTF = (props) => {
 
@@ -25,8 +45,23 @@ function getSettings(user){
     return userSettings[0]; // при создании сразу есть
 }
 
+function getExchages(user){
+    const userFilter = user ? { userId: user._id } : {};
+    const userExchanges = useTracker(() => {
+        if (!user){
+            return [];
+        }
+
+        return UserExchangeSettingsCollection.find(userFilter).fetch();
+    });
+
+    return userExchanges;
+}
+
 export const Settings = (props) => {
-    curSettings = getSettings(props.user);
+    const allExchanges = exchanges;
+    const curSettings = getSettings(props.user);
+    const curExchanges = getExchages(props.user);
     
     const curTF = curSettings.mainTF
     const allTF = [{id: '1m', title:'1 минута'},
@@ -46,10 +81,24 @@ export const Settings = (props) => {
     {id: '1M', title: '1 месяц'}]
 
     function onChangeTF(e){
-        //console.log(e.target.value);
         Meteor.call('settings.update_tf',e.target.value);
-        //curSettings.mainTF = e.Target.key;
     }
+
+    {/* <form>
+        <div className="form-group">
+            <label htmlFor="inputAPIname">Биржа</label>
+            <input type="text" className="form-control" id="inputAPIname" placeholder="binance" />
+        </div>
+        <div className="form-group">
+            <label htmlFor="inputAPI">API</label>
+            <input type="text" className="form-control" id="inputAPI" placeholder="api" />
+        </div>
+        <div className="form-group">
+            <label htmlFor="inputAPIKey">API-key</label>
+            <input type="password" className="form-control" id="inputAPI" placeholder="key" />
+        </div>
+        <button type="submit" className="btn btn-default">Сохранить</button>
+    </form> */}
 
     return <div className="container">
         <div className="page-header">
@@ -57,21 +106,6 @@ export const Settings = (props) => {
         </div>
         
         <SelectTF allTF={allTF} selected={curTF} onChange={onChangeTF}/>
-
-        <form>
-            <div className="form-group">
-                <label htmlFor="inputAPIname">Биржа</label>
-                <input type="text" className="form-control" id="inputAPIname" placeholder="binance" />
-            </div>
-            <div className="form-group">
-                <label htmlFor="inputAPI">API</label>
-                <input type="text" className="form-control" id="inputAPI" placeholder="api" />
-            </div>
-            <div className="form-group">
-                <label htmlFor="inputAPIKey">API-key</label>
-                <input type="password" className="form-control" id="inputAPI" placeholder="key" />
-            </div>
-            <button type="submit" className="btn btn-default">Сохранить</button>
-        </form>
+        <ListExchanges exchanges={curExchanges} allExchanges={allExchanges}/>
   </div>
 }

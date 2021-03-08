@@ -1,5 +1,5 @@
 import { check } from 'meteor/check';
-import { UserSettingsCollection } from './userSettings';
+import { UserSettingsCollection } from '../db/userSettings';
 
 Meteor.methods({
     'settings.insert'(tf) {
