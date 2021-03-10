@@ -1,17 +1,72 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTracker } from "meteor/react-meteor-data";
 import { UserSettingsCollection } from '../db/userSettings';
 import { exchanges } from 'ccxt';
 import { UserExchangeSettingsCollection } from '../db/userExchangeSettings';
 
-const ExchangeInfo = (props) => {
-    function onClickChange(e){
-        console.log("push edit");
+// собственно компонент отображения формы редактирования
+// вся магия тут
+const ExchangeEdit = (props) => {
+
+    const [exchangeUserName, setExchangeUserName] = useState(props.exchange.UserName || '');
+    const [exchangeName, setExchangeName] = useState(props.exchange.exchange || '');
+    const [exchangeAPI, setExchangeAPI] = useState(props.exchange.API || '');
+    const [exchangeKEY, setExchangeKey] = useState(props.exchange.Key || '');
+
+    function onReset(e){
+        props.changeEdit(false);
+    }
+    function onSubmit(e){
+        props.changeEdit(false);
     }
 
-    return <li className="list-group-item">{props.exchange} <a onClick={onClickChange}><span className="align-right glyphicon glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
+    return <li className="list-group-item">
+        <form onSubmit={onSubmit} onReset={onReset}>
+            <div className="panel panel-default">
+            <div className="panel-heading">{exchangeUserName || 'NEW'} <input type="submit" /> <input type="reset" /> </div>
+                <div className="form-group">
+                    <div className="input-group">
+                        <span className="input-group-addon" id="basic-addon3">Название</span>
+                        <input type="text" className="form-control" id="inputExchangeUserName" placeholder="my favour exchange" onChange={(e)=>setExchangeUserName(e.target.value)}/>
+                    </div>
+                </div>
+                <div className="form-group">
+                    <div className="input-group">
+                        <span className="input-group-addon" id="basic-addon3">Биржа</span>
+                        <select className="form-control selectpicker" onChange={(e)=>setExchangeName(e.target.value)} value={props.exchange.exchange}>
+                                {props.allExchanges.map((exName) => <option key={exName}>{exName}</option>)}
+                                </select>
+                    </div>
+                </div>
+                <div className="form-group">
+                    <div className="input-group">
+                        <span className="input-group-addon" id="basic-addon3">API</span>
+                        <input type="text" className="form-control" id="inputAPI" placeholder="api" onChange={(e)=>setExchangeAPI(e.target.value)} />
+                    </div>
+                </div>
+                <div className="form-group">
+                    <div className="input-group">
+                        <span className="input-group-addon" id="basic-addon3">API-key</span>
+                        <input type="password" className="form-control" id="inputAPI" placeholder="key" onChange={(e)=>setExchangeKey(e.target.value)} />
+                    </div>
+                </div>
+                </div>
+            </form>
+    </li>
 }
 
+// переключение в режим редактирования
+const ExchangeInfo = (props) => {
+    const [hasEdited, changeEdit] = useState(false);
+
+    function onClickChange(e){
+        changeEdit(true);
+    }
+
+    return hasEdited ? <ExchangeEdit changeEdit={changeEdit} {...props} />: <li className="list-group-item">{props.exchange} <a onClick={onClickChange}><span className="align-right glyphicon glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
+}
+
+// список апи
 const ListExchanges = (props) => {
 
     return <div className="panel panel-default">
@@ -23,6 +78,7 @@ const ListExchanges = (props) => {
     </div>
 }
 
+// выбор ТФ
 const SelectTF = (props) => {
 
     return <div className="panel panel-default">
@@ -38,6 +94,7 @@ const SelectTF = (props) => {
         </div>
 }
 
+// получение настроек пользователя, не стал в пользователя заталкивать, чтобы не зависеть от модуля accounting
 function getSettings(user){
     const userFilter = user ? { userId: user._id, isActive: true } : {};
     const userSettings = useTracker(() => {
@@ -53,6 +110,7 @@ function getSettings(user){
     return userSettings[0]; // при создании сразу есть
 }
 
+// получить список настроек подключения
 function getExchages(user){
     const userFilter = user ? { userId: user._id } : {};
     const userExchanges = useTracker(() => {
@@ -66,6 +124,7 @@ function getExchages(user){
     return userExchanges;
 }
 
+// модуль страницы настроек
 export const Settings = (props) => {
     const allExchanges = exchanges;
     const curSettings = getSettings(props.user);
