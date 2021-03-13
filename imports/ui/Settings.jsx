@@ -8,26 +8,51 @@ import { UserExchangeSettingsCollection } from '../db/userExchangeSettings';
 // вся магия тут
 const ExchangeEdit = (props) => {
 
-    const [exchangeUserName, setExchangeUserName] = useState(props.exchange.UserName || '');
+    const [exchangeUserName, setExchangeUserName] = useState(props.exchange.exchangeName || '');
     const [exchangeName, setExchangeName] = useState(props.exchange.exchange || '');
-    const [exchangeAPI, setExchangeAPI] = useState(props.exchange.API || '');
-    const [exchangeKEY, setExchangeKey] = useState(props.exchange.Key || '');
+    const [exchangeKEY, setExchangeKey] = useState(props.exchange.apiKey || '');
+    const [exchangeSecret, setExchangeAPI] = useState(props.exchange.secret || '');
 
     function onReset(e){
         props.changeEdit(false);
     }
     function onSubmit(e){
+        if (props.exchange == "NEW")
+            Meteor.call('exchange.insert',exchangeUserName, exchangeName, exchangeKEY, exchangeSecret);
+        else
+            Meteor.call('exchange.update',props.exchange._id, exchangeUserName, exchangeName, exchangeKEY, exchangeSecret)
+        
+        props.changeEdit(false);
+    }
+    function onRemove(e){
+        if(props.exchange != "NEW")
+            Meteor.call('exchange.remove',props.exchange._id);
+
         props.changeEdit(false);
     }
 
     return <li className="list-group-item">
-        <form onSubmit={onSubmit} onReset={onReset}>
+        <form>
             <div className="panel panel-default">
-            <div className="panel-heading">{exchangeUserName || 'NEW'} <input type="submit" /> <input type="reset" /> </div>
+                <div className="panel-heading" style={{marginBottom: 15 + "px"}}>
+                    <h4 className="panel-title">{exchangeUserName || 'NEW'}&nbsp;
+                        <button type="button" className="btn btn-default" aria-label="Left Align" onClick={onSubmit}>
+                            <span className="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                        </button>
+                        <span className="pull-right">
+                            <button type="button" className="btn btn-default" aria-label="Left Align" onClick={onReset}>
+                                <span className="glyphicon glyphicon-floppy-remove" aria-hidden="true"></span>
+                            </button>
+                            <button type="button" className="btn btn-default" aria-label="Left Align" onClick={onRemove}>
+                                <span className="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                            </button>
+                        </span>
+                    </h4>
+                </div>
                 <div className="form-group">
                     <div className="input-group">
                         <span className="input-group-addon" id="basic-addon3">Название</span>
-                        <input type="text" className="form-control" id="inputExchangeUserName" placeholder="my favour exchange" onChange={(e)=>setExchangeUserName(e.target.value)}/>
+                        <input type="text" className="form-control" id="inputExchangeUserName" placeholder="NEW" onChange={(e)=>setExchangeUserName(e.target.value)} defaultValue={exchangeUserName}/>
                     </div>
                 </div>
                 <div className="form-group">
@@ -40,14 +65,14 @@ const ExchangeEdit = (props) => {
                 </div>
                 <div className="form-group">
                     <div className="input-group">
-                        <span className="input-group-addon" id="basic-addon3">API</span>
-                        <input type="text" className="form-control" id="inputAPI" placeholder="api" onChange={(e)=>setExchangeAPI(e.target.value)} />
+                        <span className="input-group-addon" id="basic-addon3">Ключ API</span>
+                        <input type="text" className="form-control" id="inputAPI" placeholder="api" onChange={(e)=>setExchangeKey(e.target.value)} defaultValue={exchangeKEY} />
                     </div>
                 </div>
                 <div className="form-group">
                     <div className="input-group">
-                        <span className="input-group-addon" id="basic-addon3">API-key</span>
-                        <input type="password" className="form-control" id="inputAPI" placeholder="key" onChange={(e)=>setExchangeKey(e.target.value)} />
+                        <span className="input-group-addon" id="basic-addon3">Секретный ключ</span>
+                        <input type="password" className="form-control" id="inputAPI" placeholder="secret" onChange={(e)=>setExchangeAPI(e.target.value)} defaultValue={exchangeSecret}/>
                     </div>
                 </div>
                 </div>
@@ -63,7 +88,19 @@ const ExchangeInfo = (props) => {
         changeEdit(true);
     }
 
-    return hasEdited ? <ExchangeEdit changeEdit={changeEdit} {...props} />: <li className="list-group-item">{props.exchange} <a onClick={onClickChange}><span className="align-right glyphicon glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
+    glyphonClass = "align-right glyphicon glyphicon-plus";
+    exchangeID = "_newid";
+    if (props.exchange != "NEW"){
+        glyphonClass = "align-right glyphicon glyphicon-edit";
+        exchangeID = props.exchange._id;
+    }
+
+    return hasEdited ? <ExchangeEdit changeEdit={changeEdit} {...props} />: 
+        <li key={props.exchange._id} className="list-group-item">
+            {props.exchange.exchangeName || "NEW"}&nbsp;
+            <button type="button" onClick={onClickChange}>
+            <span className={glyphonClass} aria-hidden="true"></span></button>
+        </li>
 }
 
 // список апи
@@ -82,7 +119,7 @@ const ListExchanges = (props) => {
 const SelectTF = (props) => {
 
     return <div className="panel panel-default">
-        <div className="panel-heading">Основные</div>
+        <div className="panel-heading" style={{marginBottom: 15 + "px"}}>Основные</div>
             <form>
                 <div className="input-group">
                     <span className="input-group-addon" id="basic-addon3">Основной ТФ для сделок</span>
@@ -150,22 +187,6 @@ export const Settings = (props) => {
     function onChangeTF(e){
         Meteor.call('settings.update_tf',e.target.value);
     }
-
-    {/* <form>
-        <div className="form-group">
-            <label htmlFor="inputAPIname">Биржа</label>
-            <input type="text" className="form-control" id="inputAPIname" placeholder="binance" />
-        </div>
-        <div className="form-group">
-            <label htmlFor="inputAPI">API</label>
-            <input type="text" className="form-control" id="inputAPI" placeholder="api" />
-        </div>
-        <div className="form-group">
-            <label htmlFor="inputAPIKey">API-key</label>
-            <input type="password" className="form-control" id="inputAPI" placeholder="key" />
-        </div>
-        <button type="submit" className="btn btn-default">Сохранить</button>
-    </form> */}
 
     return <div className="container">
         <div className="page-header">

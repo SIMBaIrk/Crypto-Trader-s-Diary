@@ -3,6 +3,7 @@
 
 import { Meteor } from 'meteor/meteor';
 import '../imports/api/userSettingsMethods';
+import '../imports/api/userExchangeSettingsMethods';
 
 Meteor.startup(() => {
     Meteor.startup(() => {
