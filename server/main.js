@@ -16,21 +16,4 @@ WebApp.rawConnectHandlers.use(function(req, res, next) {
 
 
 Meteor.startup(() => {
-    // WebApp.rawConnectHandlers.use(function(req, res, next) {
-    //     res.setHeader('Access-Control-Allow-Origin', '*');
-    //     next();
-    //   });
-    //Meteor.startup(() => {
-        //connectHandler.use(function (req, res, next) {
-            //WebApp.rawConnectHandlers.use(function(req, res, next) {
-            //    if (req._parsedUrl.pathname.match(/\.(ttf|ttc|otf|eot|woff|woff2|font\.css|css)$/)) {
-            //      res.setHeader('Access-Control-Allow-Origin', /* your hostname, or just '*' */);
-            //    }
-            //    next();
-            //  });
-        //    res.setHeader('Access-Control-Allow-Origin', '*');
-            //res.setHeader('Strict-Transport-Security', 'max-age=2592000; includeSubDomains'); // 2592000s / 30 days
-        //    return next();
-        //  })
-    //});
 });

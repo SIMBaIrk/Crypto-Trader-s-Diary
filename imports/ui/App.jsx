@@ -4,15 +4,10 @@ import { NavBar } from "./NavBar";
 import { TradeBody } from './Trades';
 import { Settings } from './Settings';
 import { UserSettingsCollection } from '../db/userSettings'
+import { Switch, Route } from 'react-router-dom'
 
 export const App = () => {
     const user = useTracker(() => Meteor.user());
-    const [itemMenu, setItemMenu] = useState(0);
-
-    let Body = <TradeBody user={user} />
-    if (itemMenu == 1){
-        Body = <Settings user={user} />;
-    }
 
     if (user){
         let us = UserSettingsCollection.find({userId: user._id, isActive: true}).fetch();
@@ -24,8 +19,14 @@ export const App = () => {
     // в зависимости от логин пользователя выводится либо общая информация, либо описание сайта
     return (<div className="container">
 
-        <NavBar user={user} itemMenu={itemMenu} setItemMenu={setItemMenu}/>
-        {Body}
-        
+        <NavBar user={user} />
+        <Switch>
+          <Route path="/settings">
+            <Settings user={user}/>
+          </Route>
+          <Route exact path="/">
+            <TradeBody user={user}/>
+          </Route>
+        </Switch>
     </div>);
 };

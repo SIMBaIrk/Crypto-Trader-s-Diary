@@ -180,6 +180,11 @@ function getExchages(user){
 
 // модуль страницы настроек
 export const Settings = (props) => {
+
+    if (props.user == undefined){
+        return <div className="alert alert-danger">Вы должны авторизироваться, чтобы иметь доступ к этому разделу сайта</div>
+    };
+
     const allExchanges = exchanges;
     const curSettings = getSettings(props.user);
     const curExchanges = getExchages(props.user);
