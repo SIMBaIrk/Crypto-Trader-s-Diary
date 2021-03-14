@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import { useTracker } from "meteor/react-meteor-data";
 import { UserSettingsCollection } from '../db/userSettings';
-import { exchanges } from 'ccxt';
+import ccxt, { exchanges } from 'ccxt';
 import { UserExchangeSettingsCollection } from '../db/userExchangeSettings';
+//const ccxt = require ('ccxt');
 
 // собственно компонент отображения формы редактирования
 // вся магия тут
@@ -17,7 +18,7 @@ const ExchangeEdit = (props) => {
         props.changeEdit(false);
     }
     function onSubmit(e){
-        if (props.exchange == "NEW")
+        if (props.exchangeID == 0)
             Meteor.call('exchange.insert',exchangeUserName, exchangeName, exchangeKEY, exchangeSecret);
         else
             Meteor.call('exchange.update',props.exchange._id, exchangeUserName, exchangeName, exchangeKEY, exchangeSecret)
@@ -25,17 +26,17 @@ const ExchangeEdit = (props) => {
         props.changeEdit(false);
     }
     function onRemove(e){
-        if(props.exchange != "NEW")
+        if(props.exchangeID != 0)
             Meteor.call('exchange.remove',props.exchange._id);
 
         props.changeEdit(false);
     }
 
-    return <li className="list-group-item">
+    return <li key={props.exchangeID} className="list-group-item">
         <form>
             <div className="panel panel-default">
                 <div className="panel-heading" style={{marginBottom: 15 + "px"}}>
-                    <h4 className="panel-title">{exchangeUserName || 'NEW'}&nbsp;
+                    <h4 className="panel-title">{exchangeUserName}&nbsp;
                         <button type="button" className="btn btn-default" aria-label="Left Align" onClick={onSubmit}>
                             <span className="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
                         </button>
@@ -52,7 +53,7 @@ const ExchangeEdit = (props) => {
                 <div className="form-group">
                     <div className="input-group">
                         <span className="input-group-addon" id="basic-addon3">Название</span>
-                        <input type="text" className="form-control" id="inputExchangeUserName" placeholder="NEW" onChange={(e)=>setExchangeUserName(e.target.value)} defaultValue={exchangeUserName}/>
+                        <input type="text" className="form-control" id="inputExchangeUserName" placeholder="Удобное название биржи" onChange={(e)=>setExchangeUserName(e.target.value)} defaultValue={exchangeUserName}/>
                     </div>
                 </div>
                 <div className="form-group">
@@ -66,13 +67,13 @@ const ExchangeEdit = (props) => {
                 <div className="form-group">
                     <div className="input-group">
                         <span className="input-group-addon" id="basic-addon3">Ключ API</span>
-                        <input type="text" className="form-control" id="inputAPI" placeholder="api" onChange={(e)=>setExchangeKey(e.target.value)} defaultValue={exchangeKEY} />
+                        <input type="text" className="form-control" id="inputAPI" placeholder="Ключ api" onChange={(e)=>setExchangeKey(e.target.value)} defaultValue={exchangeKEY} />
                     </div>
                 </div>
                 <div className="form-group">
                     <div className="input-group">
                         <span className="input-group-addon" id="basic-addon3">Секретный ключ</span>
-                        <input type="password" className="form-control" id="inputAPI" placeholder="secret" onChange={(e)=>setExchangeAPI(e.target.value)} defaultValue={exchangeSecret}/>
+                        <input type="password" className="form-control" id="inputAPI" placeholder="Секретная часть ключа" onChange={(e)=>setExchangeAPI(e.target.value)} defaultValue={exchangeSecret}/>
                     </div>
                 </div>
                 </div>
@@ -83,34 +84,50 @@ const ExchangeEdit = (props) => {
 // переключение в режим редактирования
 const ExchangeInfo = (props) => {
     const [hasEdited, changeEdit] = useState(false);
+    const [hasConnected, changeConStatus] = useState(undefined);
 
     function onClickChange(e){
         changeEdit(true);
     }
 
-    glyphonClass = "align-right glyphicon glyphicon-plus";
-    exchangeID = "_newid";
-    if (props.exchange != "NEW"){
-        glyphonClass = "align-right glyphicon glyphicon-edit";
-        exchangeID = props.exchange._id;
-    }
+    useEffect(() => {
+        if (props.exchange._id != 0){
+            Meteor.call('ccxt.fetchBalance',props.exchange.exchange, props.exchange.apiKey, props.exchange.secret,(error, result)=>{
+                if (result.error != undefined){
+                    changeConStatus('label label-danger');
+                }else{
+                    changeConStatus('label label-success');
+                }
+                //console.log(result);
+                //console.log(error);
+            })
+        }
+    });
 
-    return hasEdited ? <ExchangeEdit changeEdit={changeEdit} {...props} />: 
-        <li key={props.exchange._id} className="list-group-item">
-            {props.exchange.exchangeName || "NEW"}&nbsp;
+    glyphonClass = "align-right glyphicon glyphicon-plus";
+    checkStatus = "";
+    if (props.exchange._id != 0){
+        glyphonClass = "align-right glyphicon glyphicon-edit";
+        
+        checkStatus = <span className={"pull-right "  + (hasConnected != undefined ? hasConnected : "label label-default")} ><span className="glyphicon glyphicon-bitcoin" /></span>
+    }
+    //console.log(props.exchange._id);
+    return hasEdited ? <ExchangeEdit exchangeID={props.exchange._id} changeEdit={changeEdit} {...props} />: 
+        <li className="list-group-item">
+            {props.exchange.exchangeName}&nbsp;
             <button type="button" onClick={onClickChange}>
             <span className={glyphonClass} aria-hidden="true"></span></button>
+            {checkStatus}
         </li>
 }
 
 // список апи
 const ListExchanges = (props) => {
-
+    
     return <div className="panel panel-default">
     <div className="panel-heading">Подключения</div>
         <ul className="list-group">
-            {props.exchanges.map((curExchange) => <ExchangeInfo exchange={curExchange} allExchanges={props.allExchanges}/>)}
-            <ExchangeInfo exchange="NEW" allExchanges={props.allExchanges}/>
+            {props.exchanges.map((curExchange) => <ExchangeInfo key={curExchange._id} exchange={curExchange} allExchanges={props.allExchanges}/>)}
         </ul>
     </div>
 }
@@ -167,6 +184,8 @@ export const Settings = (props) => {
     const curSettings = getSettings(props.user);
     const curExchanges = getExchages(props.user);
     
+    curExchanges.push({_id:0, exchangeName:"NEW"});
+
     const curTF = curSettings.mainTF
     const allTF = [{id: '1m', title:'1 минута'},
     {id: '3m', title:'3 минуты'},

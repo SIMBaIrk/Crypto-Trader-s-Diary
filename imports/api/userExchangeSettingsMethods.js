@@ -15,8 +15,8 @@ Meteor.methods({'exchange.insert'(exchangeName, exchange, apiKey, secret){
     UserExchangeSettingsCollection.insert(
         {  
             userId: this.userId,
-            exchangeName:exchangeName,
-            exchange:exchange,
+            exchangeName: exchangeName,
+            exchange: exchange,
             apiKey: apiKey,
             secret: secret
         }
