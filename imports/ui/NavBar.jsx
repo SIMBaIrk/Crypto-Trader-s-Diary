@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { useTracker } from "meteor/react-meteor-data";
 import { Accounts } from 'meteor/accounts-base';
-import { Link, NavLink, useRouteMatch } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 
 // TODO:
 // 1. обработка ошибок авторизации, и регистрации
-// 2. Добавить кнопки настройки пользователя
 
 // Заголовок меню
 const NavBarBrand =(props)=> {
@@ -22,12 +21,13 @@ const NavBarBrand =(props)=> {
 
 // кнопки слева
 const NavBarNavLeft = (props) => {
-  //console.log(props);
-
+  
+  const location = useLocation();
   return <ul className="nav navbar-nav">
-    <li className={props.current ? "active": ""}>
-      <NavLink to="/" >Дневник <span className="sr-only">(current)</span></NavLink>
-    </li></ul>
+    <li className={location.pathname == "/" ? "active": ""}>
+      <NavLink to="/" >Дневник</NavLink>
+    </li>
+    </ul>
 }
 
 // выпадающее меню авторизации
