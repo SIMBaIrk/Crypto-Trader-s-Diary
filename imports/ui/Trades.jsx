@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 
 export const TradesClosed = () => {
     return (
@@ -62,11 +62,33 @@ export const TradesOpen = () => {
   </div>)
 }
 
-export const TradeBody = ({user}) => {
+// пока через кнопку обновления
+const RefreshButton = (props) => {
+    const [refreshing, changeRefreshing] = useState(false);
+    function handleClick(){
+        changeRefreshing(true);
+
+        Meteor.call('ccxt.fetchMyTrades',(error, result)=>{
+            console.log(error);
+            console.log(result);
+            changeRefreshing(false);
+        });
+    }
+
+    let buttonClass = "btn default";
+    if (refreshing){
+        buttonClass += " disabled";
+    }
+
+    return <button className={buttonClass} onClick={handleClick}><span className="glyphicon glyphicon-refresh" aria-hidden="true"></span> Подгрузить</button>
+}
+
+// страница статистики
+export const TradeBody = (props) => {
     return(<Fragment>
-        {user ? (<p>вы вошли как пользователь {user.username}</p>):(
+        {props.user ? (<RefreshButton user={props.user}/>):(
         <div>
-            <p>Ниже пример как будут выглядеть сделки.</p>
+            <p>Ниже пример как будут выглядеть статистика.</p>
             <p>просто сделай ещё один хороший трейд</p>
             <TradesOpen />
             <TradesClosed />

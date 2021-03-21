@@ -20,7 +20,7 @@ Use nodejs framework meteor, react, bootstrap, ccxt
 Иметь инструмент по анализу сделок, с возможностью делиться как целиком профилем, так и отдельными сделками.
 
 ### Планируемый функционал
-После авторизации, необходимо добавить API (key, secret) с правом только чтение, список бирж доступен [ccxt exchange](https://github.com/ccxt/ccxt#supported-cryptocurrency-exchange-markets)
+После авторизации, необходимо добавить API (key, secret) с правом только чтение, список бирж доступен [тут ccxt](https://github.com/ccxt/ccxt#supported-cryptocurrency-exchange-markets "ccxt exchange markets")
 
 На форме кнопка обновить, запускает подключение к бирже и загрузку всех сделок (либо только новых от момента последнего обновления, возможно, в будущем для активных пользователей будет делаться в фоне).
 
