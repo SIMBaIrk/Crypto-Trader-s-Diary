@@ -1,8 +1,9 @@
 {
-  "name": "simple-todos-react",
+  "name": "crypto-trader-s-diary",
   "private": true,
   "scripts": {
     "start": "meteor run",
+    "debug": "meteor run --inspect-brk=9229",
     "test": "meteor test --once --driver-package meteortesting:mocha",
     "test-app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
     "visualize": "meteor --production --extra-packages bundle-visualizer"
@@ -12,7 +13,7 @@
     "@popperjs/core": "^2.6.0",
     "bcrypt": "^5.0.0",
     "bootstrap": "^5.0.0-beta1",
-    "ccxt": "^1.42.64",
+    "ccxt": "^1.47.40",
     "meteor-node-stubs": "^1.0.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

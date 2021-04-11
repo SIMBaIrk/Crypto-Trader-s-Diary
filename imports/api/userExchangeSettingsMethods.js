@@ -18,15 +18,19 @@ Meteor.methods({'exchange.insert'(exchangeName, exchange, apiKey, secret){
             exchangeName: exchangeName,
             exchange: exchange,
             apiKey: apiKey,
-            secret: secret
+            secret: secret,
+            since: undefined
         }
     )
     },
-    'exchange.update'(_id, exchangeName, exchange, apiKey, secret){
+    'exchange.update'(_id, exchangeName, exchange, apiKey, secret, since = undefined){
         check(apiKey, String);
         check(secret, String);
         check(exchangeName, String);
         check(exchange, String);
+        if (since != undefined){
+            check(since, Match.Integer);
+        }
     
         if (!this.userId) {
             throw new Meteor.Error('Not authorized.');
@@ -36,7 +40,8 @@ Meteor.methods({'exchange.insert'(exchangeName, exchange, apiKey, secret){
             {exchangeName:exchangeName,
             exchange:exchange,
             apiKey: apiKey,
-            secret: secret}
+            secret: secret,
+            since: since}
         });
     },
     'exchange.remove'(_id){
