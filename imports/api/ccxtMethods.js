@@ -9,9 +9,9 @@ function getExchange(exchangeID, api, secret){
     const exchange = new exchangeClass ({
         'apiKey': api,
         'secret': secret,
-        //'timeout': 30000,
-        'enableRateLimit': true,
-        'rateLimit': 500
+        'timeout': 30000,
+        'enableRateLimit': true
+//        'rateLimit': 500
     });
 
     return exchange;
@@ -40,15 +40,27 @@ async function fetchAsyncMyTrades(_exch, userId){
 
     let myTrades = [];
     const allSymbols = _exch.symbols
-
+    let taskTrades = [];
     for(let i = 0; i < allSymbols.length; i++){
+        
+        if (taskTrades.length % 100 == 0){
+            myTrades = myTrades.concat(await Promise.all(taskTrades));
+            taskTrades = [];
+        }
+
         const symbol = allSymbols[i];
         
         const lastUserTrades = UserTradesCollection.findOne({userId: userId, symbol: symbol},{sort: {timestamp: -1}});
-        const myTradeOfSymbol = await _exch.fetch_my_trades(symbol, lastUserTrades, 25);
-        if (myTradeOfSymbol.length != 0){
-            myTrades.push(myTradeOfSymbol);
-        }
+        taskTrades.push(_exch.fetchMyTrades(symbol, lastUserTrades, 25));
+
+        //const myTradeOfSymbol = await _exch.fetch_my_trades(symbol, lastUserTrades, 25);
+        //if (myTradeOfSymbol.length != 0){
+        //    myTrades.push(myTradeOfSymbol);
+        //}
+    }
+
+    if (taskTrades.length != 0){
+        myTrades.concat(await Promise.all(taskTrades));
     }
 
     console.log(myTrades.length);
