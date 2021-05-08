@@ -1,4 +1,6 @@
 import React, { Fragment, useState } from 'react';
+import { UserActivityCollection } from '../db/userActivity';
+import { useTracker } from "meteor/react-meteor-data";
 
 export const TradesClosed = () => {
     return (
@@ -65,13 +67,11 @@ export const TradesOpen = () => {
 // пока через кнопку обновления
 const RefreshButton = (props) => {
     const [refreshing, changeRefreshing] = useState(false);
+
     function handleClick(){
-        changeRefreshing(true);
+        //changeRefreshing(true);
 
         Meteor.call('ccxt.fetchMyTrades',(error, result)=>{
-            console.log(error);
-            console.log(result);
-            changeRefreshing(false);
         });
     }
 
@@ -85,16 +85,32 @@ const RefreshButton = (props) => {
 
 // страница статистики
 export const TradeBody = (props) => {
-    return(<Fragment>
-        {props.user ? (<RefreshButton user={props.user}/>):(
-        <div>
-            <p>Ниже пример как будут выглядеть статистика.</p>
-            <p>просто сделай ещё один хороший трейд</p>
-            <TradesOpen />
-            <TradesClosed />
-        </div>
-        )
+    //console.log(props.user);
+
+    if (props.user){
+        
+        // без useTracker не видит что прошли изменения
+        const activity = useTracker(() => {
+            return UserActivityCollection.findOne({userId: props.user._id}); });
+
+        console.log("" + activity.hasLoad);
+
+        let infoText = "";
+        if (activity != undefined){
+            infoText = (activity.loadSymbol) ? "последний загруженный символ " + activity.loadSymbol : ""
+            infoText += " " + ((activity.hasLoad) ? "загружается" : "не загружается")
         }
-        </Fragment>
-    );
+
+        return (<div>
+                <span> <RefreshButton user={props.user}/> {infoText} </span>
+            </div>)
+    }else {
+        return (<div>
+                    <p>Ниже пример как будут выглядеть статистика.</p>
+                    <p>просто сделай ещё один хороший трейд</p>
+                    <TradesOpen />
+                    <TradesClosed />
+                </div>
+        );
+    }
 }

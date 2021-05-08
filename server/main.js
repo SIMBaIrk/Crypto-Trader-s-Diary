@@ -2,17 +2,18 @@
 // https://apexcharts.com/react-chart-demos/candlestick-charts/category-x-axis/
 
 import { Meteor } from 'meteor/meteor';
-import { WebApp } from 'meteor/webapp';
+//import { WebApp } from 'meteor/webapp';
 import '../imports/api/userSettingsMethods';
 import '../imports/api/userExchangeSettingsMethods';
 import '../imports/api/ccxtMethods';
+import '../imports/api/userActivityMethods';
 
-var connectHandler = WebApp.connectHandlers;
+/* var connectHandler = WebApp.connectHandlers;
 
 WebApp.rawConnectHandlers.use(function(req, res, next) {
    res.setHeader('Access-Control-Allow-Origin', '*');
    next();
- });
+ }); */
 
 
 Meteor.startup(() => {
