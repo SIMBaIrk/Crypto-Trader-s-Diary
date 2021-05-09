@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable import/prefer-default-export */
 import React from 'react';
 import { useTracker } from 'meteor/react-meteor-data';
@@ -15,6 +16,7 @@ export const App = () => {
 
   if (user) {
     // я не могу обратиться к meteor.userId поэтому оставил так
+    // eslint-disable-next-line no-underscore-dangle
     const us = UserSettingsCollection.find({ userId: user._id, isActive: true }).fetch();
     if (us.length === 0) {
       Meteor.call('settings.insert', '1h');
