@@ -23,7 +23,9 @@
     "no-loops/no-loops": 2
   },
   "settings": {
-    "import/resolver": "meteor",
+    "import/resolver": {
+      "meteor": { "extensions": [".js", ".jsx"]}
+    },
     "import/core-modules": [ "meteor/meteor" ]
   }
 }
