@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { UserTradesCollection } from '../db/userTrades';
 
 Meteor.methods({
-    'userTrades.insert': function() {
-        return undefined;
-    }
-})
+  'userTrades.insert': function userTradesInsert() {
+    return undefined;
+  },
+});
