@@ -1,8 +1,9 @@
 import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 import { UserTradesCollection } from '../db/userTrades';
 
 Meteor.methods({
-    'userTrades.insert'(){
-        
+    'userTrades.insert': function() {
+        return undefined;
     }
 })

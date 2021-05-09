@@ -9,12 +9,21 @@
     "visualize": "meteor --production --extra-packages bundle-visualizer"
   },
   "dependencies": {
-    "@babel/runtime": "^7.11.2",
-    "@popperjs/core": "^2.6.0",
-    "bcrypt": "^5.0.0",
-    "bootstrap": "^5.0.0-beta1",
-    "ccxt": "^1.47.40",
-    "meteor-node-stubs": "^1.0.1",
+    "@babel/runtime": "^7.14.0",
+    "@popperjs/core": "^2.9.2",
+    "babel-eslint": "^10.1.0",
+    "bcrypt": "^5.0.1",
+    "bootstrap": "^5.0.0",
+    "ccxt": "^1.49.65",
+    "eslint-import-resolver-meteor": "^0.4.0",
+    "eslint-plugin-lodash": "^7.2.0",
+    "eslint-plugin-no-loops": "^0.3.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-optimize-regex": "^1.2.0",
+    "eslint-plugin-promise": "^5.1.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-plugin-sonarjs": "^0.7.0",
+    "meteor-node-stubs": "^1.0.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0"
@@ -25,5 +34,12 @@
       "server": "server/main.js"
     },
     "testModule": "tests/main.js"
+  },
+  "devDependencies": {
+    "eslint": "^7.26.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-react": "^7.23.2"
   }
 }
